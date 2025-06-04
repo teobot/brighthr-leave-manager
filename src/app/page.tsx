@@ -1,6 +1,6 @@
 import { getAbsences } from "@/common/helpers/kata.helper";
 import { Absence } from "@/common/types/kata.types";
-import AbsenceStackedTable from "@/components/molecules/AbsenceStackedTable";
+import AbsenceStackedTable from "@/components/organisms/AbsenceStackedTable";
 
 export default async function Home() {
   const absences: Absence[] = await getAbsences();
