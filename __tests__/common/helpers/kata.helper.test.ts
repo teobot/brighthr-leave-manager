@@ -1,13 +1,13 @@
-import { getAdsenses, getConflicts } from "@/common/helpers/kata.helper";
+import { getAbsences, getConflicts } from "@/common/helpers/kata.helper";
 import { Conflict, Absence } from "@/common/types/kata.types";
 
-describe("getAdsenses", () => {
-  it("should return the adsenses data", async () => {
-    const adsenses: Absence[] = await getAdsenses();
-    expect(adsenses).toBeDefined();
-    expect(adsenses).toBeInstanceOf(Array);
-    expect(typeof adsenses[0]).toBe("object");
-    expect(adsenses[0]).toHaveProperty("id");
+describe("getAbsences", () => {
+  it("should return the absences data", async () => {
+    const absences: Absence[] = await getAbsences();
+    expect(absences).toBeDefined();
+    expect(absences).toBeInstanceOf(Array);
+    expect(typeof absences[0]).toBe("object");
+    expect(absences[0]).toHaveProperty("id");
   });
 });
 

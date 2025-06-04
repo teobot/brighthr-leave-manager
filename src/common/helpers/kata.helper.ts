@@ -1,7 +1,7 @@
 import kata from "@/common/apis/kata";
 import { Absence, Conflict } from "@/common/types/kata.types";
 
-export const getAdsenses = async (): Promise<Absence[]> => {
+export const getAbsences = async (): Promise<Absence[]> => {
   const response = await kata.get("/absences");
   return response.data;
 };
