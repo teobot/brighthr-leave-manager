@@ -1,10 +1,14 @@
 "use client";
+
 import { Absence } from "@/common/types/kata.types";
-import Badge from "../atoms/Badge";
-import { addDays, format } from "date-fns";
-import { getAbsenceType, sortAbsences } from "@/common/helpers/absence.helper";
+import {
+  sortAbsences,
+  filterAbsenceByUserSearch,
+} from "@/common/helpers/absence.helper";
 import { useState } from "react";
-import { twMerge } from "tailwind-merge";
+import { getConflicts } from "@/common/helpers/kata.helper";
+import AbsenceTableRow from "../molecules/AbsenceTableRow";
+import TableHeaderRow from "../atoms/TableHeaderRow";
 
 export default function AbsenceStackedTable({
   absences,
@@ -16,6 +20,7 @@ export default function AbsenceStackedTable({
     sortedBy: string;
     sortAsc: boolean;
   }>({ absences, sortedBy: "name", sortAsc: true });
+
   const [userSearchInput, setUserSearchInput] = useState<string>("");
 
   const handleSort = (_sortBy: string) => {
@@ -30,8 +35,18 @@ export default function AbsenceStackedTable({
     });
   };
 
-  const tableHeaderClasses =
-    "py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0 cursor-pointer hover:bg-gray-100 select-none";
+  const handleFindConflicts = async (absence: Absence) => {
+    const conflicts = await getConflicts(absence.employee.id);
+    console.log(conflicts);
+  };
+
+  const sortArrow = (_sortedBy: string) => {
+    return _sortedBy === absencesList.sortedBy
+      ? absencesList.sortAsc
+        ? "↑"
+        : "↓"
+      : "";
+  };
 
   return (
     <>
@@ -40,6 +55,8 @@ export default function AbsenceStackedTable({
           id="search"
           name="search"
           type="text"
+          value={userSearchInput || ""}
+          onChange={(e) => setUserSearchInput(e.target.value)}
           placeholder="Search"
           className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
         />
@@ -49,94 +66,43 @@ export default function AbsenceStackedTable({
               <table className="min-w-full divide-y divide-gray-300">
                 <thead>
                   <tr>
-                    <th
-                      scope="col"
-                      className={twMerge(tableHeaderClasses)}
-                      onClick={() => handleSort("name")}
-                    >
-                      Name{" "}
-                      {absencesList.sortedBy === "name" &&
-                        (absencesList.sortAsc ? "↑" : "↓")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={twMerge(tableHeaderClasses)}
-                      onClick={() => handleSort("type")}
-                    >
-                      Type{" "}
-                      {absencesList.sortedBy === "type" &&
-                        (absencesList.sortAsc ? "↑" : "↓")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={twMerge(tableHeaderClasses)}
-                      onClick={() => handleSort("startDate")}
-                    >
-                      Start Date{" "}
-                      {absencesList.sortedBy === "startDate" &&
-                        (absencesList.sortAsc ? "↑" : "↓")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={twMerge(tableHeaderClasses)}
-                      onClick={() => handleSort("days")}
-                    >
-                      Days{" "}
-                      {absencesList.sortedBy === "days" &&
-                        (absencesList.sortAsc ? "↑" : "↓")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={twMerge(tableHeaderClasses)}
-                      onClick={() => handleSort("endDate")}
-                    >
-                      End Date{" "}
-                      {absencesList.sortedBy === "endDate" &&
-                        (absencesList.sortAsc ? "↑" : "↓")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={twMerge(tableHeaderClasses)}
-                      onClick={() => handleSort("approved")}
-                    >
-                      Approved{" "}
-                      {absencesList.sortedBy === "approved" &&
-                        (absencesList.sortAsc ? "↑" : "↓")}
-                    </th>
+                    <TableHeaderRow onClick={() => handleSort("name")}>
+                      {`Name ${sortArrow("name")}`}
+                    </TableHeaderRow>
+                    <TableHeaderRow onClick={() => handleSort("type")}>
+                      {`Type ${sortArrow("type")}`}
+                    </TableHeaderRow>
+                    <TableHeaderRow onClick={() => handleSort("startDate")}>
+                      {`Start Date ${sortArrow("startDate")}`}
+                    </TableHeaderRow>
+                    <TableHeaderRow onClick={() => handleSort("days")}>
+                      {`Days ${sortArrow("days")}`}
+                    </TableHeaderRow>
+                    <TableHeaderRow onClick={() => handleSort("endDate")}>
+                      {`End Date ${sortArrow("endDate")}`}
+                    </TableHeaderRow>
+                    <TableHeaderRow onClick={() => handleSort("approved")}>
+                      {`Approved ${sortArrow("approved")}`}
+                    </TableHeaderRow>
+                    <TableHeaderRow onClick={() => handleSort("conflicts")}>
+                      Conflicts
+                    </TableHeaderRow>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {absencesList.absences.map((absence: Absence) => (
-                    <tr key={absence.id}>
-                      <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
-                        {absence.employee.firstName} {absence.employee.lastName}
-                      </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        <Badge
-                          text={absence.absenceType}
-                          variant={getAbsenceType(absence.absenceType)}
-                        />
-                      </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        {format(absence.startDate, "dd/MM/yyyy")}
-                      </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        {absence.days}
-                      </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        {format(
-                          addDays(absence.startDate, absence.days),
-                          "dd/MM/yyyy"
-                        )}
-                      </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        <Badge
-                          text={absence.approved ? "Yes" : "No"}
-                          variant={absence.approved ? "success" : "danger"}
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                  {absencesList.absences
+                    .filter((absence: Absence) =>
+                      filterAbsenceByUserSearch(absence, userSearchInput)
+                    )
+                    .map((absence: Absence) => (
+                      <AbsenceTableRow
+                        key={absence.id}
+                        absence={absence}
+                        userSearchInput={userSearchInput}
+                        handleFindConflicts={handleFindConflicts}
+                        setUserSearchInput={setUserSearchInput}
+                      />
+                    ))}
                 </tbody>
               </table>
             </div>
