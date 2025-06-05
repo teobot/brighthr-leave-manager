@@ -14,7 +14,7 @@ export default async function Home() {
               <div className="flex items-center px-2 lg:px-0">
                 <div className="shrink-0">
                   <img
-                    alt="Your Company"
+                    alt="Kata"
                     src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=300"
                     className="block size-8"
                   />
