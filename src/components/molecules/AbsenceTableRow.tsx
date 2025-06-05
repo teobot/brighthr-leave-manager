@@ -1,22 +1,35 @@
-import { Absence } from "@/common/types/kata.types";
-import React from "react";
+import { Absence, Conflict } from "@/common/types/kata.types";
+import React, { useEffect, useState } from "react";
 import Badge from "../atoms/Badge";
 import { boldMatchingText } from "@/common/helpers/text.helper";
 import { format } from "date-fns";
 import { addDays } from "date-fns";
 import { getAbsenceType } from "@/common/helpers/absence.helper";
+import { getConflicts } from "@/common/helpers/kata.helper";
+import { twMerge } from "tailwind-merge";
 
 export default function AbsenceTableRow({
   absence,
   userSearchInput,
-  handleFindConflicts,
   setUserSearchInput,
 }: {
   absence: Absence;
   userSearchInput: string;
-  handleFindConflicts: (absence: Absence) => void;
   setUserSearchInput: (input: string) => void;
 }) {
+  const [hasConflicts, setHasConflicts] =
+    useState<Conflict["conflicts"]>(false);
+
+  useEffect(() => {
+    const findConflicts = async () => {
+      const conflicts = await getConflicts(absence.employee.id);
+      setHasConflicts(conflicts.conflicts);
+    };
+    findConflicts();
+  }, []);
+
+  const tableDataClassName = "p-4 text-sm whitespace-nowrap";
+
   return (
     <tr
       onClick={() =>
@@ -24,8 +37,12 @@ export default function AbsenceTableRow({
           `${absence.employee.firstName} ${absence.employee.lastName}`
         )
       }
+      className={twMerge(
+        "cursor-pointer",
+        hasConflicts && "bg-red-100 border-l-3 border-red-200 border-b-0"
+      )}
     >
-      <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
+      <td className="text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
         <div
           dangerouslySetInnerHTML={{
             __html: boldMatchingText(
@@ -35,34 +52,24 @@ export default function AbsenceTableRow({
           }}
         />
       </td>
-      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+      <td className={tableDataClassName}>
         <Badge
           text={absence.absenceType}
           variant={getAbsenceType(absence.absenceType)}
         />
       </td>
-      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+      <td className={tableDataClassName}>
         {format(absence.startDate, "dd/MM/yyyy")}
       </td>
-      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-        {absence.days}
-      </td>
-      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+      <td className={tableDataClassName}>{absence.days}</td>
+      <td className={tableDataClassName}>
         {format(addDays(absence.startDate, absence.days), "dd/MM/yyyy")}
       </td>
-      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+      <td className={tableDataClassName}>
         <Badge
           text={absence.approved ? "Yes" : "No"}
           variant={absence.approved ? "success" : "danger"}
         />
-      </td>
-      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-        <button
-          className="text-blue-500"
-          onClick={() => handleFindConflicts(absence)}
-        >
-          find
-        </button>
       </td>
     </tr>
   );
