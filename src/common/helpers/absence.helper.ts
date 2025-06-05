@@ -1,6 +1,6 @@
 import { BadgeProps } from "@/components/atoms/Badge";
-import { Absence } from "../types/kata.types";
-import { addDays, compareAsc } from "date-fns";
+import { Absence, AbsenceType } from "../types/kata.types";
+import { addDays, compareAsc, isValid, parse } from "date-fns";
 
 export const getAbsenceType = (absenceType: string): BadgeProps["variant"] => {
   switch (absenceType) {
@@ -62,4 +62,47 @@ export const sortAbsences = (
   } else {
     return _sortedAbsences;
   }
+};
+
+export const sortByText = (absences: Absence[], search: string) => {
+  if (!search) return absences;
+
+  // if the search string is the same as a absence type then return the absences that have that type
+  if (Object.values(AbsenceType).includes(search as AbsenceType)) {
+    return absences.filter((absence) => absence.absenceType === search);
+  }
+
+  // if the search string is a number then return the absences that have that number of days
+  if (!isNaN(Number(search))) {
+    return absences.filter((absence) => absence.days === Number(search));
+  }
+
+  // if the search string is either approved | not approved | yes | no then return the absences that have that status
+  if (search.toLowerCase() === "approved") {
+    return absences.filter((absence) => absence.approved);
+  } else if (search.toLowerCase() === "not approved") {
+    return absences.filter((absence) => !absence.approved);
+  } else if (search.toLowerCase() === "yes") {
+    return absences.filter((absence) => absence.approved);
+  } else if (search.toLowerCase() === "no") {
+    return absences.filter((absence) => !absence.approved);
+  }
+
+  // if the search string is a date then return the absences that have that date
+  if (isValid(parse(search, "yyyy-MM-dd", new Date()))) {
+    return absences.filter((absence) => absence.startDate === search);
+  }
+
+  // if the search string is a name then return the absences that have that name
+  if (search.toLowerCase().includes(" ")) {
+    return absences.filter((absence) => {
+      const [firstName, lastName] = search.toLowerCase().split(" ");
+      return (
+        absence.employee.firstName.toLowerCase() === firstName &&
+        absence.employee.lastName.toLowerCase() === lastName
+      );
+    });
+  }
+
+  return absences;
 };

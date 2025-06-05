@@ -1,4 +1,8 @@
-import { getAbsenceType, sortAbsences } from "@/common/helpers/absence.helper";
+import {
+  getAbsenceType,
+  sortAbsences,
+  sortByText,
+} from "@/common/helpers/absence.helper";
 import { Absence } from "@/common/types/kata.types";
 import kataDataExample from "../../example/kata.data.example.json";
 
@@ -99,5 +103,70 @@ describe("sortAbsences", () => {
         true
       );
     }
+  });
+});
+
+describe("sortByText", () => {
+  const absences: Absence[] = kataDataExample.map((absence) => ({
+    id: absence.id,
+    startDate: absence.startDate,
+    days: absence.days,
+    absenceType: absence.absenceType as Absence["absenceType"],
+    employee: absence.employee,
+    approved: absence.approved,
+  }));
+
+  it("returns all absences if search is empty", () => {
+    expect(sortByText(absences, "")).toEqual(absences);
+  });
+
+  it("filters by absenceType if search matches an absence type", () => {
+    const type = absences[0].absenceType;
+    const filtered = sortByText(absences, type);
+    expect(filtered.every((a) => a.absenceType === type)).toBe(true);
+  });
+
+  it("filters by days if search is a number", () => {
+    const days = absences[0].days;
+    const filtered = sortByText(absences, String(days));
+    expect(filtered.every((a) => a.days === days)).toBe(true);
+  });
+
+  it("filters by approved if search is 'approved' or 'yes' (case-insensitive)", () => {
+    const approved = sortByText(absences, "approved");
+    expect(approved.every((a) => a.approved)).toBe(true);
+    const yes = sortByText(absences, "yes");
+    expect(yes.every((a) => a.approved)).toBe(true);
+  });
+
+  it("filters by not approved if search is 'not approved' or 'no' (case-insensitive)", () => {
+    const notApproved = sortByText(absences, "not approved");
+    expect(notApproved.every((a) => !a.approved)).toBe(true);
+    const no = sortByText(absences, "no");
+    expect(no.every((a) => !a.approved)).toBe(true);
+  });
+
+  it("filters by startDate if search is a valid date string (yyyy-MM-dd)", () => {
+    // Use the first absence's startDate, formatted as yyyy-MM-dd
+    const date = absences[0].startDate.slice(0, 10);
+    const filtered = sortByText(absences, date);
+    expect(filtered.every((a) => a.startDate.startsWith(date))).toBe(true);
+  });
+
+  it("filters by name if search is a full name (first last)", () => {
+    const { firstName, lastName } = absences[0].employee;
+    const name = `${firstName} ${lastName}`;
+    const filtered = sortByText(absences, name);
+    expect(
+      filtered.every(
+        (a) =>
+          a.employee.firstName === firstName && a.employee.lastName === lastName
+      )
+    ).toBe(true);
+  });
+
+  it("returns all absences if search does not match any criteria", () => {
+    const filtered = sortByText(absences, "nonexistentsearchterm");
+    expect(filtered).toEqual(absences);
   });
 });
