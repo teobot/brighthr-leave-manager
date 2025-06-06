@@ -38,7 +38,7 @@ export default function AbsenceTableRow({
         )
       }
       className={twMerge(
-        "cursor-pointer hover:bg-blue-50",
+        "cursor-pointer hover:bg-blue-50 relative",
         hasConflicts &&
           "bg-red-100 border-l-3 border-red-200 border-b-0 hover:bg-red-200"
       )}
@@ -72,6 +72,16 @@ export default function AbsenceTableRow({
           variant={absence.approved ? "success" : "danger"}
         />
       </td>
+
+      {hasConflicts && (
+        <td className="absolute top-0 -right-6">
+          <Badge
+            text={"Conflict"}
+            variant={"danger"}
+            className="text-xs font-bold py-0.5 px-1"
+          />
+        </td>
+      )}
     </tr>
   );
 }

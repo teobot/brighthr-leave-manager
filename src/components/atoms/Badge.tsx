@@ -3,9 +3,10 @@ import { twMerge } from "tailwind-merge";
 export type BadgeProps = {
   text: string;
   variant: "primary" | "success" | "warning" | "danger";
+  className?: string;
 };
 
-export default function Badge({ text, variant }: BadgeProps) {
+export default function Badge({ text, variant, className }: BadgeProps) {
   const variants = {
     danger: {
       bgColor: "bg-red-50",
@@ -30,7 +31,8 @@ export default function Badge({ text, variant }: BadgeProps) {
       className={twMerge(
         "inline-flex items-center rounded-full bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-500/10 ring-inset",
         variants[variant].bgColor,
-        variants[variant].textColor
+        variants[variant].textColor,
+        className
       )}
     >
       {text}
