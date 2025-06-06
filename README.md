@@ -94,3 +94,6 @@ npm run test
 - Add more tests for main table and row components to improve coverage.
 - Increase search and sortably
 - pagination
+- Using branches with pull requests
+  - I didn't for this project since its a solo developer with zero code review or deployment requirement
+- Debounce the user search
