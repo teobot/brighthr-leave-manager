@@ -1,6 +1,8 @@
 import { getAbsences } from "@/common/helpers/kata.helper";
 import { Absence } from "@/common/types/kata.types";
 import AbsenceStackedTable from "@/components/organisms/AbsenceStackedTable";
+import Image from "next/image";
+import Logo from "@/assets/logo.png";
 
 export default async function Home() {
   const absences: Absence[] = await getAbsences();
@@ -13,10 +15,12 @@ export default async function Home() {
             <div className="relative flex h-16 items-center justify-between lg:border-b lg:border-indigo-400">
               <div className="flex items-center px-2 lg:px-0">
                 <div className="shrink-0">
-                  <img
+                  <Image
                     alt="Kata"
-                    src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=300"
+                    src={Logo}
                     className="block size-8"
+                    width={32}
+                    height={32}
                   />
                 </div>
               </div>
