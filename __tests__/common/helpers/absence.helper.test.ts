@@ -117,7 +117,7 @@ describe("filterAbsenceByUserSearch", () => {
   }));
 
   it("returns true for empty search (should return the absence itself)", () => {
-    expect(filterAbsenceByUserSearch(absences[0], "")).toEqual(absences[0]);
+    expect(filterAbsenceByUserSearch(absences[0], "")).toEqual(true);
   });
 
   it("returns true if absenceType matches search", () => {
@@ -182,5 +182,17 @@ describe("filterAbsenceByUserSearch", () => {
     expect(
       filterAbsenceByUserSearch(absences[0], "nonexistentsearchterm")
     ).toBe(false);
+  });
+
+  it("returns true if the search string is a date", () => {
+    expect(filterAbsenceByUserSearch(absences[0], "25/12/2023")).toBe(true);
+  });
+
+  it("returns false if the search string is a date that is not the start date", () => {
+    expect(filterAbsenceByUserSearch(absences[0], "28/05/2022")).toBe(false);
+  });
+
+  it("returns false if the search string is not a date", () => {
+    expect(filterAbsenceByUserSearch(absences[0], "2022-11-24")).toBe(false);
   });
 });

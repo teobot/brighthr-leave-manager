@@ -1,6 +1,6 @@
 import { BadgeProps } from "@/components/atoms/Badge";
 import { Absence, AbsenceType } from "../types/kata.types";
-import { addDays, compareAsc, isValid, parse } from "date-fns";
+import { addDays, compareAsc, format } from "date-fns";
 
 export const getAbsenceType = (absenceType: string): BadgeProps["variant"] => {
   switch (absenceType) {
@@ -21,7 +21,7 @@ export const sortAbsences = (
   absences: Absence[],
   sortBy: string,
   direction: "asc" | "desc" = "asc"
-) => {
+): Absence[] => {
   const _sortedAbsences = absences;
 
   switch (sortBy) {
@@ -64,47 +64,47 @@ export const sortAbsences = (
   }
 };
 
-export const filterAbsenceByUserSearch = (
-  absences: Absence,
-  search: string
-) => {
-  if (!search) return absences;
+export const filterAbsenceByUserSearch: (
+  employeeAbsence: Absence,
+  searchQuery: string
+) => boolean = (employeeAbsence: Absence, searchQuery: string) => {
+  if (!searchQuery) return true;
 
   // trim the search string
-  const trimmedSearch = search.trim();
+  const trimmedSearch = searchQuery.trim();
 
   // if the search string is the same as a absence type then return the absences that have that type
   if (Object.values(AbsenceType).includes(trimmedSearch as AbsenceType)) {
-    return absences.absenceType === trimmedSearch;
+    return employeeAbsence.absenceType === trimmedSearch;
   }
 
   // if the search string is a number then return the absences that have that number of days
   if (!isNaN(Number(trimmedSearch))) {
-    return absences.days === Number(trimmedSearch);
+    return employeeAbsence.days === Number(trimmedSearch);
   }
 
   // if the search string is either approved | not approved | yes | no then return the absences that have that status
   if (trimmedSearch.toLowerCase() === "approved") {
-    return absences.approved;
+    return employeeAbsence.approved;
   } else if (trimmedSearch.toLowerCase() === "not approved") {
-    return !absences.approved;
+    return !employeeAbsence.approved;
   } else if (trimmedSearch.toLowerCase() === "yes") {
-    return absences.approved;
+    return employeeAbsence.approved;
   } else if (trimmedSearch.toLowerCase() === "no") {
-    return !absences.approved;
+    return !employeeAbsence.approved;
   }
 
   // if the search string is a date then return the absences that have that date
-  if (isValid(parse(trimmedSearch, "yyyy-MM-dd", new Date()))) {
-    return absences.startDate === trimmedSearch;
+  if (format(employeeAbsence.startDate, "dd/MM/yyyy") === trimmedSearch) {
+    return true;
   }
 
   const employeeName = trimmedSearch.toLowerCase().trim();
 
   return (
-    absences.employee.firstName.toLowerCase().includes(employeeName) ||
-    absences.employee.lastName.toLowerCase().includes(employeeName) ||
-    `${absences.employee.firstName} ${absences.employee.lastName}`
+    employeeAbsence.employee.firstName.toLowerCase().includes(employeeName) ||
+    employeeAbsence.employee.lastName.toLowerCase().includes(employeeName) ||
+    `${employeeAbsence.employee.firstName} ${employeeAbsence.employee.lastName}`
       .toLowerCase()
       .includes(employeeName)
   );
