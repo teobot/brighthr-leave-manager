@@ -38,8 +38,9 @@ export default function AbsenceTableRow({
         )
       }
       className={twMerge(
-        "cursor-pointer",
-        hasConflicts && "bg-red-100 border-l-3 border-red-200 border-b-0"
+        "cursor-pointer hover:bg-blue-50",
+        hasConflicts &&
+          "bg-red-100 border-l-3 border-red-200 border-b-0 hover:bg-red-200"
       )}
     >
       <td className="text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
