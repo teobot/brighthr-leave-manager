@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BrightHR Absence Manager
+
+A single-page application (SPA) built with Next.js and TypeScript for managing and viewing employee absences, as part of the BrightHR technical assessment.
+
+## Features
+
+- **Absence Table:** Displays start date, end date, employee name, approval status, and absence type for each absence.
+- **Sorting:** Sort absences by name, type, start date, end date, days, and approval status.
+- **Conflict Indication:** Visual indicator for absences with conflicts, using the provided API endpoint.
+- **Employee Filter:** Click an employee’s name to filter and view all their absences.
+- **Search:** Filter absences by employee name.
+- **Accessible UI:** Uses semantic HTML and accessible components.
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Jest](https://jestjs.io/) & [React Testing Library](https://testing-library.com/) for testing
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [Axios](https://axios-http.com/) for API requests
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (v18+ recommended)
+- npm, yarn, pnpm, or bun
+
+### Installation
+
+1. Clone this repository:
+
+   ```bash
+   git clone <your-repo-url>
+   cd <your-repo-directory>
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   # or
+   bun install
+   ```
+
+### Running the Application
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Running Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To run all tests:
 
-## Learn More
+```bash
+npm test
+```
 
-To learn more about Next.js, take a look at the following resources:
+or
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run test
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+- `src/app/` – Main app entry and layout
+- `src/components/` – UI components (atoms, molecules, organisms)
+- `src/common/` – Shared helpers, API logic, and types
+- `__tests__/` – Unit and integration tests
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Endpoints Used
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `GET https://front-end-kata.brighthr.workers.dev/api/absences` – Fetch all absences
+- `GET https://front-end-kata.brighthr.workers.dev/api/conflict/{id}` – Check for conflicts for a given absence
+
+## Approach & Decisions
+
+- **TDD:** Helper functions and atomic components are covered by tests. (Next step: add more tests for main table components.)
+- **Type Safety:** All data and props are strongly typed with TypeScript.
+- **Accessibility:** Interactive elements use semantic HTML. (Next step: make employee name a button for improved accessibility.)
+- **Separation of Concerns:** API logic, helpers, and UI components are organized for clarity and maintainability.
+
+## Improvements & Next Steps
+
+- Add more tests for main table and row components to improve coverage.
+- Increase search and sortably
+- pagination
